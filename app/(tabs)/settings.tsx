@@ -1,42 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Theme } from '@/constants/theme';
 import { SettingsService } from '@/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { Settings as SettingsType } from '@/types/settings';
-import { ChevronRight, Moon, Sun, Zap, Share2, Trash2, Info, Github } from 'lucide-react-native';
+import {
+  ChevronRight,
+  Moon,
+  Sun,
+  Zap,
+  Share2,
+  Trash2,
+  Info,
+  Github,
+} from 'lucide-react-native';
 
 export default function Settings() {
   const { settings, updateSettings, resetSettings } = useSettings();
-  
+
   const handleToggle = (key: keyof SettingsType, value: boolean) => {
     updateSettings({ [key]: value });
   };
-  
+
   const handleResetSettings = () => {
     Alert.alert(
       'Reset Settings',
       'Are you sure you want to reset all settings to default?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Reset', 
+        {
+          text: 'Reset',
           style: 'destructive',
-          onPress: () => resetSettings() 
-        }
+          onPress: () => resetSettings(),
+        },
       ]
     );
   };
-  
+
   const handleClearHistory = () => {
     Alert.alert(
       'Clear History',
       'Are you sure you want to clear all ride history? This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Clear', 
+        {
+          text: 'Clear',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -47,8 +65,8 @@ export default function Settings() {
               console.error('Failed to clear ride history:', error);
               Alert.alert('Error', 'Failed to clear ride history.');
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -74,39 +92,42 @@ export default function Settings() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Tracking Settings</Text>
-          
+
           {renderSettingItem(
             <Zap color={Theme.colors.primary} size={22} />,
             'Auto-Pause',
             'Automatically pause tracking when stopped',
             <Switch
-              trackColor={{ false: "#e0e0e0", true: Theme.colors.primary }}
+              trackColor={{ false: '#e0e0e0', true: Theme.colors.primary }}
               thumbColor="#fff"
               ios_backgroundColor="#e0e0e0"
               onValueChange={(value) => handleToggle('autoPause', value)}
               value={settings.autoPause}
             />
           )}
-          
-          {Platform.OS !== 'web' && renderSettingItem(
-            <Moon color={Theme.colors.primary} size={22} />,
-            'Background Tracking',
-            'Continue tracking when app is in background',
-            <Switch
-              trackColor={{ false: "#e0e0e0", true: Theme.colors.primary }}
-              thumbColor="#fff"
-              ios_backgroundColor="#e0e0e0"
-              onValueChange={(value) => handleToggle('backgroundTracking', value)}
-              value={settings.backgroundTracking}
-            />
-          )}
-          
+
+          {Platform.OS !== 'web' &&
+            renderSettingItem(
+              <Moon color={Theme.colors.primary} size={22} />,
+              'Background Tracking',
+              'Continue tracking when app is in background',
+              <Switch
+                trackColor={{ false: '#e0e0e0', true: Theme.colors.primary }}
+                thumbColor="#fff"
+                ios_backgroundColor="#e0e0e0"
+                onValueChange={(value) =>
+                  handleToggle('backgroundTracking', value)
+                }
+                value={settings.backgroundTracking}
+              />
+            )}
+
           {renderSettingItem(
             <Share2 color={Theme.colors.primary} size={22} />,
             'Auto-Share Rides',
             'Show share option after completing rides',
             <Switch
-              trackColor={{ false: "#e0e0e0", true: Theme.colors.primary }}
+              trackColor={{ false: '#e0e0e0', true: Theme.colors.primary }}
               thumbColor="#fff"
               ios_backgroundColor="#e0e0e0"
               onValueChange={(value) => handleToggle('autoShareRides', value)}
@@ -114,16 +135,16 @@ export default function Settings() {
             />
           )}
         </View>
-        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Display Settings</Text>
-          
+
           {renderSettingItem(
             <Sun color={Theme.colors.primary} size={22} />,
             'Use Metric System',
             'Display distance in kilometers instead of miles',
             <Switch
-              trackColor={{ false: "#e0e0e0", true: Theme.colors.primary }}
+              trackColor={{ false: '#e0e0e0', true: Theme.colors.primary }}
               thumbColor="#fff"
               ios_backgroundColor="#e0e0e0"
               onValueChange={(value) => handleToggle('useMetricSystem', value)}
@@ -131,35 +152,37 @@ export default function Settings() {
             />
           )}
         </View>
-        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Data Management</Text>
-          
-          <TouchableOpacity 
-            style={styles.dangerButton} 
+
+          <TouchableOpacity
+            style={styles.dangerButton}
             onPress={handleClearHistory}
           >
             <Trash2 color={Theme.colors.error} size={22} />
             <Text style={styles.dangerButtonText}>Clear Ride History</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.dangerButton} 
+
+          <TouchableOpacity
+            style={styles.dangerButton}
             onPress={handleResetSettings}
           >
             <Trash2 color={Theme.colors.error} size={22} />
-            <Text style={styles.dangerButtonText}>Reset to Default Settings</Text>
+            <Text style={styles.dangerButtonText}>
+              Reset to Default Settings
+            </Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          
+
           <TouchableOpacity style={styles.aboutItem}>
             <Info color={Theme.colors.primary} size={22} />
             <Text style={styles.aboutItemText}>Version 1.0.0</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.aboutItem}>
             <Github color={Theme.colors.primary} size={22} />
             <Text style={styles.aboutItemText}>GitHub Repository</Text>

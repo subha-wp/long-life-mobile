@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar, MapPin, Clock, MoveVertical as MoreVertical } from 'lucide-react-native';
 import { Theme } from '@/constants/theme';
 import { RideHistoryService } from '@/services/RideHistoryService';
 import { Ride } from '@/types/ride';
@@ -12,19 +17,19 @@ export default function History() {
   const [rideHistory, setRideHistory] = useState<Ride[]>([]);
   const [selectedFilterIndex, setSelectedFilterIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const filters = ['All', 'This Week', 'This Month'];
-  
+
   useEffect(() => {
     loadRideHistory();
   }, [selectedFilterIndex]);
-  
+
   const loadRideHistory = async () => {
     setIsLoading(true);
     try {
       const historyService = new RideHistoryService();
       let rides: Ride[];
-      
+
       switch (selectedFilterIndex) {
         case 1: // This Week
           rides = await historyService.getThisWeekRides();
@@ -35,7 +40,7 @@ export default function History() {
         default: // All
           rides = await historyService.getAllRides();
       }
-      
+
       setRideHistory(rides);
     } catch (error) {
       console.error('Failed to load ride history:', error);
@@ -69,7 +74,7 @@ export default function History() {
       <View style={styles.filtersContainer}>
         {filters.map(renderFilterOption)}
       </View>
-      
+
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading ride history...</Text>

@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import { LocationService } from './LocationService';
 import { useTrackingStore } from '@/stores/trackingStore';
 import { useSettings } from '@/hooks/useSettings';
@@ -29,12 +28,14 @@ export class RideDetectionService {
 
       // Get settings
       const { settings } = useSettings.getState();
-      
+
       // Set up detection interval
       this.detectionIntervalId = setInterval(() => this.detectRide(), 2000);
-      
+
       // Set up location update callback
-      this.locationService?.setLocationUpdateCallback(this.handleLocationUpdate);
+      this.locationService?.setLocationUpdateCallback(
+        this.handleLocationUpdate
+      );
     } catch (error) {
       console.error('Error starting ride detection:', error);
       throw error;
@@ -47,9 +48,10 @@ export class RideDetectionService {
     clearInterval(this.detectionIntervalId);
     this.detectionIntervalId = null;
 
-    const locations = await this.locationService?.stopLocationTracking() || [];
+    const locations =
+      (await this.locationService?.stopLocationTracking()) || [];
     const { finalizeRide } = useTrackingStore.getState();
-    
+
     if (locations.length > 0) {
       finalizeRide(locations);
     }
@@ -66,13 +68,14 @@ export class RideDetectionService {
         location.latitude,
         location.longitude
       );
-      
-      const timeDiff = (location.timestamp - this.lastLocation.timestamp) / 1000; // in seconds
+
+      const timeDiff =
+        (location.timestamp - this.lastLocation.timestamp) / 1000; // in seconds
       if (timeDiff > 0) {
         const speed = distance / timeDiff; // in meters per second
         this.detectSpeedChange(speed);
       }
-      
+
       const { updateCurrentDistance } = useTrackingStore.getState();
       updateCurrentDistance(distance);
     }
@@ -83,18 +86,23 @@ export class RideDetectionService {
   private detectRide(): void {
     const currentTime = Date.now();
     const { settings } = useSettings.getState();
-    
+
     // If enough time has passed, update the current duration
     if (this.isRiding && !this.isPaused) {
       const { updateCurrentDuration } = useTrackingStore.getState();
       const elapsed = Math.floor((currentTime - this.lastDetectionTime) / 1000);
       updateCurrentDuration(elapsed);
     }
-    
+
     this.lastDetectionTime = currentTime;
-    
+
     // Auto-pause if idle for too long
-    if (settings.autoPause && this.isRiding && !this.isPaused && this.idleStartTime) {
+    if (
+      settings.autoPause &&
+      this.isRiding &&
+      !this.isPaused &&
+      this.idleStartTime
+    ) {
       const idleTime = currentTime - this.idleStartTime;
       if (idleTime > settings.maxIdleTime) {
         this.isPaused = true;
@@ -106,10 +114,11 @@ export class RideDetectionService {
 
   private detectSpeedChange(speed: number): void {
     const { settings } = useSettings.getState();
-    const { isTracking, isPaused, resumeTracking, pauseTracking } = useTrackingStore.getState();
-    
+    const { isTracking, isPaused, resumeTracking, pauseTracking } =
+      useTrackingStore.getState();
+
     if (!isTracking) return;
-    
+
     // Auto-pause functionality
     if (settings.autoPause) {
       if (speed < settings.minSpeedThreshold) {
@@ -120,7 +129,7 @@ export class RideDetectionService {
       } else {
         // We're moving fast enough to be considered riding
         this.idleStartTime = null;
-        
+
         // If we were paused, resume tracking
         if (isPaused) {
           this.isPaused = false;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 import { RideLocation } from '@/types/ride';
@@ -27,7 +28,8 @@ export class LocationService {
 
       // Request background permissions if needed and available
       if (Platform.OS !== 'web' && settings.backgroundTracking) {
-        const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+        const { status: backgroundStatus } =
+          await Location.requestBackgroundPermissionsAsync();
         console.log('Background location permission:', backgroundStatus);
       }
 

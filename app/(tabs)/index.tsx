@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Play, Pause, Square } from 'lucide-react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import * as Location from 'expo-location';
 import { Theme } from '@/constants/theme';
 import { formatDistance, formatDuration } from '@/utils/formatter';
@@ -28,7 +39,9 @@ export default function Dashboard() {
 
   const locationService = useRef(new LocationService()).current;
   const rideDetectionService = useRef(new RideDetectionService()).current;
-  const [locationPermission, setLocationPermission] = useState<boolean | null>(null);
+  const [locationPermission, setLocationPermission] = useState<boolean | null>(
+    null
+  );
 
   // Animation values
   const animatedScale = useSharedValue(1);
@@ -42,7 +55,7 @@ export default function Dashboard() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       setLocationPermission(status === 'granted');
-      
+
       if (status !== 'granted') {
         if (Platform.OS === 'web') {
           Alert.alert(
@@ -146,14 +159,18 @@ export default function Dashboard() {
         {isTracking ? (
           <View style={styles.trackingContainer}>
             <Animated.View style={[styles.statsContainer, animatedStyle]}>
-              <Text style={styles.distanceValue}>{formatDistance(currentDistance)}</Text>
+              <Text style={styles.distanceValue}>
+                {formatDistance(currentDistance)}
+              </Text>
               <Text style={styles.distanceLabel}>Distance</Text>
-              <Text style={styles.durationValue}>{formatDuration(currentDuration)}</Text>
+              <Text style={styles.durationValue}>
+                {formatDuration(currentDuration)}
+              </Text>
               <Text style={styles.durationLabel}>Duration</Text>
             </Animated.View>
 
-            <TrackingControls 
-              isTracking={isTracking} 
+            <TrackingControls
+              isTracking={isTracking}
               isPaused={isPaused}
               onStart={handleStartTracking}
               onPause={handlePauseTracking}
@@ -164,10 +181,14 @@ export default function Dashboard() {
         ) : (
           <View style={styles.notTrackingContainer}>
             <RideSummaryCard />
-            <DailyStatsCard todayDistance={todayDistance} />
-            
-            <TouchableOpacity 
-              style={styles.startButton} 
+            <DailyStatsCard
+              todayDistance={todayDistance}
+              ridesCount={0}
+              loyaltyPoints={0}
+            />
+
+            <TouchableOpacity
+              style={styles.startButton}
               onPress={handleStartTracking}
               disabled={!locationPermission}
             >
